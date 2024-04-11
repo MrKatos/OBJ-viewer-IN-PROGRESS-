@@ -3,7 +3,9 @@
 #include <iostream>
 //#include <fstream>
 //#include <time.h>
-//#include <cmath>
+#include <cmath>
+#define _USE_MATH_DEFINES
+#include<math.h>
 #include <vector>
 //#include <string>
 //#include <algorithm>
