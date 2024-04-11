@@ -279,7 +279,7 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
     matrix = MatxMat(matrix, matX);
     matrix = MatxMat(matrix, matY);
 
-    std::vector < sf::Vector2f> New_Points_pos;
+    std::vector < sf::Vector3f> trans_pos;
 
     // reeorienting box's points possition
     for (int i = 0; i < 12; ++i) 
@@ -290,11 +290,41 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
         point_camera_space = VecPLUSvec(point_camera_space, translacja);
 
         //std::cout << "Wspolrzedne punktow 3D po rzucie na plaszczyzne 2D: (" << point_camera_space.x << ", " << point_camera_space.y << ")" << std::endl;
-        New_Points_pos.push_back(sf::Vector2f(point_camera_space.x, point_camera_space.y));
+        trans_pos.push_back(sf::Vector3f(point_camera_space.x, point_camera_space.y, point_camera_space.z));
     }
 
     // define the position of box points
-    for (int i = 0; i < 3; ++i)
+    std::vector <sf::Vector2f> New_Points_pos;
+    std::vector <sf::Vector3f> Sorted_Points;
+
+    for (int i = 0; i < points.size()/4; ++i)
+    {
+        std::cout << "andzrej" << std::endl;
+        std::vector<float> v;
+        float sum = 0.0f;
+        for (int j = 0; j < 4; j++)
+        {
+            v.push_back(trans_pos[j].z); 
+        }
+        for (const auto& num : v)
+        {
+            sum += num;
+        }
+        float avr = sum / 4.f;
+        for (int j = 0; j < 4; j++)
+        {
+            Sorted_Points.push_back(sf::Vector3f(trans_pos[j].x, trans_pos[j].y, avr));
+        }
+        trans_pos.erase(trans_pos.begin(), trans_pos.begin() + 4);
+    }
+
+    // std::sort(Sorted_Points.begin(), Sorted_Points.end());
+    for (size_t i = 0; i < Sorted_Points.size(); ++i)
+    {
+        New_Points_pos.push_back(sf::Vector2f(Sorted_Points[i].x, Sorted_Points[i].y));
+    }
+
+    for (int i = 0; i < points.size() / 4; ++i)
     {
         sf::VertexArray box(sf::Quads, 4);
         for (int j = 0; j < 4; j++)
@@ -311,6 +341,7 @@ int main()
 {
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
+    window.setFramerateLimit(60);
     // Background
     std::vector<sf::CircleShape> blur;
     Blur(blur, window, 100, 110, 110, 110, 0.04);
