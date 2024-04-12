@@ -267,6 +267,16 @@ Vector3f VecPLUSvec(Vector3f& v1, Vector3f& v2)
     return new_vector;
 }
 
+void UpDownScale(std::vector<Vector3f>& point, float scale)
+{
+    for (size_t i = 0; i < point.size(); ++i)
+    {
+        point[i].x *= scale;
+        point[i].y *= scale;
+        point[i].z *= scale;
+    }
+}
+
 void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacja, std::vector<sf::VertexArray>& BOX)
 {
     //-------------------------------------------
@@ -282,7 +292,7 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
     std::vector < sf::Vector3f> trans_pos;
 
     // reeorienting box's points possition
-    for (int i = 0; i < 12; ++i) 
+    for (int i = 0; i < points.size(); ++i) 
     {
 
         Vector3f point_camera_space = MatxVec(matrix, points[i]);
@@ -299,7 +309,6 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
 
     for (int i = 0; i < points.size()/4; ++i)
     {
-        std::cout << "andzrej" << std::endl;
         std::vector<float> v;
         float sum = 0.0f;
         for (int j = 0; j < 4; j++)
@@ -317,13 +326,36 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
         }
         trans_pos.erase(trans_pos.begin(), trans_pos.begin() + 4);
     }
-
+    
+    for (size_t i = 0; i < Sorted_Points.size() / 4 - 1; ++i)
+    {
+        for (size_t j = 0; j < Sorted_Points.size()/ 4 - i - 1; ++j) // 0 1 2
+        {
+            if (Sorted_Points[j*4].z > Sorted_Points[j*4 + 4].z)
+            {
+                sf::Vector3f temp = Sorted_Points[j*4];
+                sf::Vector3f temp1 = Sorted_Points[j * 4 + 1];
+                sf::Vector3f temp2= Sorted_Points[j * 4 + 2];
+                sf::Vector3f temp3 = Sorted_Points[j * 4 + 3];
+    
+                Sorted_Points[j * 4] = Sorted_Points[j * 4 + 4];
+                Sorted_Points[j * 4 + 1] = Sorted_Points[j * 4 + 5];
+                Sorted_Points[j * 4 + 2] = Sorted_Points[j * 4 + 6];
+                Sorted_Points[j * 4 + 3] = Sorted_Points[j * 4 + 7];
+    
+                Sorted_Points[j * 4 + 4] = temp;
+                Sorted_Points[j * 4 + 5] = temp1;
+                Sorted_Points[j * 4 + 6] = temp2;
+                Sorted_Points[j * 4 + 7] = temp3;
+            }
+        }
+    }
     // std::sort(Sorted_Points.begin(), Sorted_Points.end());
     for (size_t i = 0; i < Sorted_Points.size(); ++i)
     {
         New_Points_pos.push_back(sf::Vector2f(Sorted_Points[i].x, Sorted_Points[i].y));
     }
-
+    
     for (int i = 0; i < points.size() / 4; ++i)
     {
         sf::VertexArray box(sf::Quads, 4);
@@ -362,9 +394,24 @@ int main()
         Vector3f(-25, -25, 25),
         Vector3f(25, -25, 25),
         Vector3f(25, -25, -25),
-        Vector3f(-25, -25, -25)
-    };
+        Vector3f(-25, -25, -25),
 
+        Vector3f(-25, 25, 25),
+        Vector3f(25, 25, 25),
+        Vector3f(25, 25, -25),
+        Vector3f(-25, 25, -25),
+
+        Vector3f(-25, -25, 25),
+        Vector3f(-25, -25, -25),
+        Vector3f(-25, 25, -25),
+        Vector3f(-25, 25, 25),
+
+        Vector3f(25, -25, 25),
+        Vector3f(25, -25, -25),
+        Vector3f(25, 25, -25),
+        Vector3f(25, 25, 25),
+    };
+    
     // Utworzenie nowej macierzy 4x4
     Matrix4f matrix;
 
@@ -393,7 +440,8 @@ int main()
     matrix.m[3][3] = 1.0f;
 
     
-    bool pawel = true;
+    bool zwieksz = true;
+    bool zmniejsz = false;
     // run the program as long as the window is open
     while (window.isOpen())
     {
@@ -414,7 +462,8 @@ int main()
         {
             window.draw(blur[i]);
         }
-
+        
+        
         UPDATE(matrix, points, translacja, BOX);
         for (size_t i = 0; i < BOX.size(); ++i)
         {
