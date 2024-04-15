@@ -1,12 +1,12 @@
 ﻿#include "stdafx.h"
-
+#include "OBJ.h"
 
 
 struct Vector3f
 {
     float x = 0, y = 0, z = 0, w = 1;
-    Vector3f(float x_, float y_, float z_) : x(x_), y(y_), z(z_){}
-    Vector3f(){}
+    Vector3f(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
+    Vector3f() {}
 };
 
 struct Matrix4f
@@ -29,7 +29,7 @@ struct MatRotX
 
         mrX[1][0] = 0.0f;
         mrX[1][1] = cos(radians);
-        mrX[1][2] = (-1.f)*(sin(radians));
+        mrX[1][2] = (-1.f) * (sin(radians));
         mrX[1][3] = 0.0f;
 
         mrX[2][0] = 0.0f;
@@ -67,7 +67,7 @@ struct MatRotX
     }
 };
 
-Matrix4f MatRotXFUN(MatRotX &m) 
+Matrix4f MatRotXFUN(MatRotX& m)
 {
     Matrix4f matrix;
     for (int i = 0; i < 4; ++i)
@@ -292,7 +292,7 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
     std::vector < sf::Vector3f> trans_pos;
 
     // reeorienting box's points possition
-    for (int i = 0; i < points.size(); ++i) 
+    for (int i = 0; i < points.size(); ++i)
     {
 
         Vector3f point_camera_space = MatxVec(matrix, points[i]);
@@ -305,15 +305,15 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
 
     // define the position of box points
     std::vector <sf::Vector2f> New_Points_pos;
-    std::vector <sf::Vector3f> Sorted_Points;
+    std::vector <Vector3f> Sorted_Points;
 
-    for (int i = 0; i < points.size()/4; ++i)
+    for (int i = 0; i < points.size() / 4; ++i)
     {
         std::vector<float> v;
         float sum = 0.0f;
         for (int j = 0; j < 4; j++)
         {
-            v.push_back(trans_pos[j].z); 
+            v.push_back(trans_pos[j].z);
         }
         for (const auto& num : v)
         {
@@ -322,27 +322,27 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
         float avr = sum / 4.f;
         for (int j = 0; j < 4; j++)
         {
-            Sorted_Points.push_back(sf::Vector3f(trans_pos[j].x, trans_pos[j].y, avr));
+            Sorted_Points.push_back(Vector3f(trans_pos[j].x, trans_pos[j].y, avr));
         }
         trans_pos.erase(trans_pos.begin(), trans_pos.begin() + 4);
     }
-    
+
     for (size_t i = 0; i < Sorted_Points.size() / 4 - 1; ++i)
     {
-        for (size_t j = 0; j < Sorted_Points.size()/ 4 - i - 1; ++j) // 0 1 2
+        for (size_t j = 0; j < Sorted_Points.size() / 4 - i - 1; ++j) 
         {
-            if (Sorted_Points[j*4].z > Sorted_Points[j*4 + 4].z)
+            if (Sorted_Points[j * 4].z > Sorted_Points[j * 4 + 4].z)
             {
-                sf::Vector3f temp = Sorted_Points[j*4];
-                sf::Vector3f temp1 = Sorted_Points[j * 4 + 1];
-                sf::Vector3f temp2= Sorted_Points[j * 4 + 2];
-                sf::Vector3f temp3 = Sorted_Points[j * 4 + 3];
-    
+                Vector3f temp = Sorted_Points[j * 4];
+                Vector3f temp1 = Sorted_Points[j * 4 + 1];
+                Vector3f temp2 = Sorted_Points[j * 4 + 2];
+                Vector3f temp3 = Sorted_Points[j * 4 + 3];
+
                 Sorted_Points[j * 4] = Sorted_Points[j * 4 + 4];
                 Sorted_Points[j * 4 + 1] = Sorted_Points[j * 4 + 5];
                 Sorted_Points[j * 4 + 2] = Sorted_Points[j * 4 + 6];
                 Sorted_Points[j * 4 + 3] = Sorted_Points[j * 4 + 7];
-    
+
                 Sorted_Points[j * 4 + 4] = temp;
                 Sorted_Points[j * 4 + 5] = temp1;
                 Sorted_Points[j * 4 + 6] = temp2;
@@ -355,22 +355,28 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
     {
         New_Points_pos.push_back(sf::Vector2f(Sorted_Points[i].x, Sorted_Points[i].y));
     }
-    
+
     for (int i = 0; i < points.size() / 4; ++i)
     {
         sf::VertexArray box(sf::Quads, 4);
+        box[0].color = sf::Color::Red;
+        box[1].color = sf::Color::Green;
+        box[2].color = sf::Color::Blue;
+        box[3].color = sf::Color::Yellow;
         for (int j = 0; j < 4; j++)
         {
             box[j].position = New_Points_pos[j];
-            box[j].color = sf::Color(150 * i + 50, 200 * i + 50, 200 * i + 50);
         }
         New_Points_pos.erase(New_Points_pos.begin(), New_Points_pos.begin() + 4);
+        Sorted_Points.erase(Sorted_Points.begin(), Sorted_Points.begin() + 4);
         BOX.push_back(box);
     }
 }
 
 int main()
 {
+    std::string path = "C:/Users/kacpe/Documents/Programowanie projekty/OBJ_VIEWER/main/test.obj";
+    OBJ obj(path);
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
     window.setFramerateLimit(60);
@@ -411,7 +417,7 @@ int main()
         Vector3f(25, 25, -25),
         Vector3f(25, 25, 25),
     };
-    
+
     // Utworzenie nowej macierzy 4x4
     Matrix4f matrix;
 
@@ -439,7 +445,7 @@ int main()
     matrix.m[3][2] = 0.0f;
     matrix.m[3][3] = 1.0f;
 
-    
+
     bool zwieksz = true;
     bool zmniejsz = false;
     // run the program as long as the window is open
@@ -462,8 +468,8 @@ int main()
         {
             window.draw(blur[i]);
         }
-        
-        
+
+
         UPDATE(matrix, points, translacja, BOX);
         for (size_t i = 0; i < BOX.size(); ++i)
         {

@@ -1,14 +1,14 @@
 //#include <cstdlib>
 //#include <ctime>
 #include <iostream>
-//#include <fstream>
+#include <fstream>
 //#include <time.h>
 #include <cmath>
 #define _USE_MATH_DEFINES
 #include<math.h>
 #include <vector>
-//#include <string>
-//#include <algorithm>
+#include <string>
+#include <algorithm>
 
 //SFML
 #include <SFML/Graphics.hpp>
