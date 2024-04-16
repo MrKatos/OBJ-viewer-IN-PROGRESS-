@@ -2,6 +2,7 @@
 //#include <ctime>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 //#include <time.h>
 #include <cmath>
 #define _USE_MATH_DEFINES

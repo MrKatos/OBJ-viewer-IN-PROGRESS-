@@ -375,7 +375,7 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
 
 int main()
 {
-    std::string path = "C:/Users/kacpe/Documents/Programowanie projekty/OBJ_VIEWER/main/test.obj";
+    std::string path = "C:/Users/kacpe/Documents/Programowanie projekty/OBJ_VIEWER/main/crate.obj";
     OBJ obj(path);
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
