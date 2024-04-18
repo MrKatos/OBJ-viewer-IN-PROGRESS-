@@ -1,71 +1,7 @@
 ﻿#include "stdafx.h"
 #include "OBJ.h"
-
-
-struct Vector3f
-{
-    float x = 0, y = 0, z = 0, w = 1;
-    Vector3f(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
-    Vector3f() {}
-};
-
-struct Matrix4f
-{
-    float m[4][4] = { 0 };
-};
-
-// X axis rotation matrix
-struct MatRotX
-{
-    float mrX[4][4] = { 0 };
-    float fi = 0;
-    MatRotX(float fi_) : fi(fi_)
-    {
-        float radians = fi * M_PI / 180.0; // Deg to Rad
-        mrX[0][0] = 1.0f;
-        mrX[0][1] = 0.0f;
-        mrX[0][2] = 0.0f;
-        mrX[0][3] = 0.0f;
-
-        mrX[1][0] = 0.0f;
-        mrX[1][1] = cos(radians);
-        mrX[1][2] = (-1.f) * (sin(radians));
-        mrX[1][3] = 0.0f;
-
-        mrX[2][0] = 0.0f;
-        mrX[2][1] = sin(radians);
-        mrX[2][2] = cos(radians);
-        mrX[2][3] = 0.0f;
-
-        mrX[3][0] = 0.0f;
-        mrX[3][1] = 0.0f;
-        mrX[3][2] = 0.0f;
-        mrX[3][3] = 1.0f;
-    }
-    MatRotX()
-    {
-        float radians = fi * M_PI / 180.0; // Deg to Rad
-        mrX[0][0] = 1.0f;
-        mrX[0][1] = 0.0f;
-        mrX[0][2] = 0.0f;
-        mrX[0][3] = 0.0f;
-
-        mrX[1][0] = 0.0f;
-        mrX[1][1] = cos(radians);
-        mrX[1][2] = (-1.f) * (sin(radians));
-        mrX[1][3] = 0.0f;
-
-        mrX[2][0] = 0.0f;
-        mrX[2][1] = sin(radians);
-        mrX[2][2] = cos(radians);
-        mrX[2][3] = 0.0f;
-
-        mrX[3][0] = 0.0f;
-        mrX[3][1] = 0.0f;
-        mrX[3][2] = 0.0f;
-        mrX[3][3] = 1.0f;
-    }
-};
+#include "Mat4.h"
+#include "Vec4.h"
 
 Matrix4f MatRotXFUN(MatRotX& m)
 {
@@ -79,59 +15,6 @@ Matrix4f MatRotXFUN(MatRotX& m)
     }
     return matrix;
 };
-
-struct MatRotY
-{
-    float mrY[4][4] = { 0 };
-    float fi = 0;
-    MatRotY(float fi_) : fi(fi_)
-    {
-        float radians = fi * M_PI / 180.0; // Deg to Rad
-        mrY[0][0] = cos(radians);
-        mrY[0][1] = 0.0f;
-        mrY[0][2] = sin(radians);
-        mrY[0][3] = 0.0f;
-
-        mrY[1][0] = 0.0f;
-        mrY[1][1] = 1.0f;
-        mrY[1][2] = 0.0f;
-        mrY[1][3] = 0.0f;
-
-        mrY[2][0] = (-1.0f) * (sin(radians));
-        mrY[2][1] = 0.0f;
-        mrY[2][2] = cos(radians);
-        mrY[2][3] = 0.0f;
-
-        mrY[3][0] = 0.0f;
-        mrY[3][1] = 0.0f;
-        mrY[3][2] = 0.0f;
-        mrY[3][3] = 1.0f;
-    }
-    MatRotY()
-    {
-        float radians = fi * M_PI / 180.0; // Deg to Rad
-        mrY[0][0] = cos(radians);
-        mrY[0][1] = 0.0f;
-        mrY[0][2] = sin(radians);
-        mrY[0][3] = 0.0f;
-
-        mrY[1][0] = 0.0f;
-        mrY[1][1] = 1.0f;
-        mrY[1][2] = 0.0f;
-        mrY[1][3] = 0.0f;
-
-        mrY[2][0] = (-1.0f) * (sin(radians));
-        mrY[2][1] = 0.0f;
-        mrY[2][2] = cos(radians);
-        mrY[2][3] = 0.0f;
-
-        mrY[3][0] = 0.0f;
-        mrY[3][1] = 0.0f;
-        mrY[3][2] = 0.0f;
-        mrY[3][3] = 1.0f;
-    }
-};
-
 Matrix4f MatRotYFUN(MatRotY& m)
 {
     Matrix4f matrix;
@@ -144,59 +27,6 @@ Matrix4f MatRotYFUN(MatRotY& m)
     }
     return matrix;
 };
-
-struct MatRotZ
-{
-    float mrZ[4][4] = { 0 };
-    float fi = 0;
-    MatRotZ(float fi_) : fi(fi_)
-    {
-        float radians = fi * M_PI / 180.0; // Deg to Rad
-        mrZ[0][0] = cos(radians);
-        mrZ[0][1] = (-1.0f) * (sin(radians));
-        mrZ[0][2] = 0.0f;
-        mrZ[0][3] = 0.0f;
-
-        mrZ[1][0] = (sin(radians));
-        mrZ[1][1] = cos(radians);
-        mrZ[1][2] = 0.0f;
-        mrZ[1][3] = 0.0f;
-
-        mrZ[2][0] = 0.0f;
-        mrZ[2][1] = 0.0f;
-        mrZ[2][2] = 1.0f;
-        mrZ[2][3] = 0.0f;
-
-        mrZ[3][0] = 0.0f;
-        mrZ[3][1] = 0.0f;
-        mrZ[3][2] = 0.0f;
-        mrZ[3][3] = 1.0f;
-    }
-    MatRotZ()
-    {
-        float radians = fi * M_PI / 180.0; // Deg to Rad
-        mrZ[0][0] = cos(radians);
-        mrZ[0][1] = (-1.0f) * (sin(radians));
-        mrZ[0][2] = 0.0f;
-        mrZ[0][3] = 0.0f;
-
-        mrZ[1][0] = (sin(radians));
-        mrZ[1][1] = cos(radians);
-        mrZ[1][2] = 0.0f;
-        mrZ[1][3] = 0.0f;
-
-        mrZ[2][0] = 0.0f;
-        mrZ[2][1] = 0.0f;
-        mrZ[2][2] = 1.0f;
-        mrZ[2][3] = 0.0f;
-
-        mrZ[3][0] = 0.0f;
-        mrZ[3][1] = 0.0f;
-        mrZ[3][2] = 0.0f;
-        mrZ[3][3] = 1.0f;
-    }
-};
-
 void Blur(std::vector<sf::CircleShape>& vector, sf::RenderWindow& window, float precision, int R, int G, int B, float visibility)
 {
     if (precision > 100)
@@ -241,7 +71,6 @@ Vector3f MatxVec(Matrix4f& m, Vector3f& i)
     v.w = i.x * m.m[3][0] + i.y * m.m[3][1] + i.z * m.m[3][2] + i.w * m.m[3][3];
     return v;
 }
-
 Matrix4f MatxMat(Matrix4f& m1, Matrix4f& m2)
 {
     Matrix4f matrix;
@@ -250,14 +79,12 @@ Matrix4f MatxMat(Matrix4f& m1, Matrix4f& m2)
             matrix.m[c][r] = m1.m[0][r] * m2.m[c][0] + m1.m[1][r] * m2.m[c][1] + m1.m[2][r] * m2.m[c][2] + m1.m[3][r] * m2.m[c][3];
     return matrix;
 }
-
 void TransByVector(Matrix4f& m, Vector3f& v)
 {
     m.m[0][3] += v.x;
     m.m[1][3] += v.y;
     m.m[2][3] += v.z;
 }
-
 Vector3f VecPLUSvec(Vector3f& v1, Vector3f& v2)
 {
     Vector3f new_vector;
@@ -303,7 +130,7 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
         trans_pos.push_back(sf::Vector3f(point_camera_space.x, point_camera_space.y, point_camera_space.z));
     }
 
-    // define the position of box points
+    // define the position of box points------------------------------------------------------------------------------------------------
     std::vector <sf::Vector2f> New_Points_pos;
     std::vector <Vector3f> Sorted_Points;
 
@@ -375,8 +202,24 @@ void UPDATE(Matrix4f& matrix, std::vector<Vector3f>& points, Vector3f& translacj
 
 int main()
 {
-    std::string path = "C:/Users/kacpe/Documents/Programowanie projekty/OBJ_VIEWER/main/crate.obj";
-    OBJ obj(path);
+    Mat4 macierzX(RotX, 30);
+    Vec4 vector(1.f, 2.f, 3.f);
+    Vec4 vector2(1.f, 2.f, 3.f);
+    Mat4 Nowa;
+    Vec4 Nvec;
+    Nowa = Nowa * macierzX;
+    std::cout << Nowa << std::endl;
+    Nvec = vector + vector2;
+    std::cout << Nvec << std::endl;
+    Nowa.Clear();
+    Nvec = Nowa * vector;
+    std::cout << Nvec << std::endl;
+
+    OBJ obj("Audi.obj");
+    obj.SetScale(50.f);
+    obj.MoveMesh(X, 400.f);
+    obj.MoveMesh(Y, 300.f);
+
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
     window.setFramerateLimit(60);
@@ -470,12 +313,19 @@ int main()
         }
 
 
-        UPDATE(matrix, points, translacja, BOX);
-        for (size_t i = 0; i < BOX.size(); ++i)
+        //UPDATE(matrix, points, translacja, BOX);
+        //for (size_t i = 0; i < BOX.size(); ++i)
+        //{
+        //    window.draw(BOX[i]);
+        //}
+        //BOX.clear();
+        obj.RotateMesh(RotX, 0.25f);
+        obj.RotateMesh(RotY, 0.25f);
+        for (size_t i = 0; i < obj.GetMeshSize(); ++i)
         {
-            window.draw(BOX[i]);
+            window.draw(obj.GetMesh()[i]);
         }
-        BOX.clear();
+
         // end the current frame
         window.display();
     }

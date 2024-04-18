@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "OBJ.h"
+#include "Mat4.h"
 
 OBJ::OBJ(std::string path)
 {
@@ -31,7 +32,10 @@ OBJ::OBJ(std::string path)
                     std::cerr << "Blad konwersji na float: " << e.what() << std::endl;
                 }
             }
-            this->vn.push_back(this->bufor);
+            bufor_1.SetX(bufor[0]);
+            bufor_1.SetY(bufor[1]);
+            bufor_1.SetZ(bufor[2]);
+            this->vn.push_back(this->bufor_1);
             this->bufor.clear();
         }
         else if (line[0] == 'v')
@@ -49,7 +53,10 @@ OBJ::OBJ(std::string path)
                     std::cerr << "Blad konwersji na float: " << e.what() << std::endl;
                 }
             }
-            this->v.push_back(this->bufor);
+            bufor_1.SetX(bufor[0]);
+            bufor_1.SetY(bufor[1]);
+            //bufor_1.SetZ(bufor[2]);
+            this->v.push_back(bufor_1);
             this->bufor.clear();
         }
         else if (line[0] == 'f')
@@ -73,13 +80,110 @@ OBJ::OBJ(std::string path)
             this->bufor_2.clear();
         }
     }
-    for (const auto& vec1 : f) {
-        for (const auto& vec2 : vec1) {
-            for (float value : vec2) {
-                std::cout << value << " ";
-            }
-            std::cout << std::endl;
+}
+
+void OBJ::SetScale(float sacle)
+{
+    for (size_t i = 0; i < f.size(); ++i)
+    {
+        for (size_t j = 0; j < f[i].size(); ++j)
+        {
+            f[i][j] = f[i][j] * sacle;
         }
-        std::cout << std::endl;
     }
 }
+
+void OBJ::RotateMesh(MatrixType type, float angle)
+{
+    Mat4 mat(type, angle);
+    for (size_t i = 0; i < f.size(); ++i)
+    {
+        for (size_t j = 0; j < 3; ++j)
+        {
+            f[i][j] = mat * f[i][j];
+        }
+    }
+    this->CreateMesh();
+}
+
+void OBJ::MoveMesh(Direction d, float value)
+{
+    Vec4 v(d, value);
+    this->translation = this->translation + v;
+    this->CreateMesh();
+}
+
+void OBJ::CreateMesh()
+{
+    std::vector<std::vector<Vec4>> f_copy = f;
+    this->mesh.clear();
+    if (!this->translation.IsZEROS())
+    {
+        for (size_t i = 0; i < f_copy.size(); ++i)
+        {
+            for (size_t j = 0; j < f_copy[i].size(); ++j)
+            {
+                f_copy[i][j] = f_copy[i][j] + this->translation;
+            }
+        }
+    }
+    for (int i = 0; i < f_copy.size(); ++i)
+    {
+        float sum = 0.0f;
+        for (size_t j = 0; j < f_copy[i].size(); ++j)
+        {
+            sum += f_copy[i][j].GetZ();
+        }
+        float avr = sum / 3.f;
+        
+        for (size_t j = 0; j < f_copy[i].size(); ++j)
+        {
+            f_copy[i][j].SetZ(avr);
+        }
+    }
+    for (size_t i = 0; i < f_copy.size() - 1; ++i)
+    {
+        for (size_t j = 0; j < f_copy.size() - i - 1; ++j)
+        {
+            if (f_copy[j][0].GetW() > f_copy[j + 1][0].GetW())
+            {
+                std::vector<Vec4> temp = f_copy[j];
+
+                f_copy[j] = f_copy[j + 1];
+
+                f_copy[j + 1] = temp;
+            }
+        }
+    }
+    for (int i = 0; i < f_copy.size(); ++i)
+    {
+        sf::VertexArray box(sf::Triangles, 4);
+        box[0].color = sf::Color::Red;
+        box[1].color = sf::Color::Green;
+        box[2].color = sf::Color::Blue;
+
+        for (int j = 0; j < f_copy[i].size(); ++j)
+        {
+            box[j].position = sf::Vector2f(f_copy[i][j].GetX(), f_copy[i][j].GetY());
+        }
+        this->mesh.push_back(box);
+    }
+    for (size_t i = 0; i < f_copy.size(); ++i)
+    {
+        for (size_t j = 0; j < f_copy[i].size(); ++j)
+        {
+            f_copy[i][j].SetW(1.f);
+        }
+    }
+}
+
+float OBJ::GetMeshSize()
+{
+    return mesh.size();
+}
+
+std::vector<sf::VertexArray> OBJ::GetMesh()
+{
+    return this->mesh;
+}
+
